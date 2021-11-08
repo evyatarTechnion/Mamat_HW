@@ -1,23 +1,23 @@
 #!/bin/bash
 
+# create html file - players
 wget https://www.premierleague.com/players
 
-FILE="/home/mamat/Mamat_HW/HW_1/players"
-U_FILE="/home/mamat/Mamat_HW/HW_1/urls.txt"
-UP_FILE="/home/mamat/Mamat_HW/HW_1/update_urls.txt"
-OVERVIEW="/home/mamat/Mamat_HW/HW_1/overview"
-
+# search for all players link, all links will be in urls.txt file
 while read line; do
 	for word in $line; do
 		echo $word | grep -oP '(\/players\/)([0-9])+(\/)([a-zA-Z-])+(\/overview)' >> urls.txt
 	done
-done <"$FILE"
+done <$'players'
 
-sed  's/\/players/https:\/\/www\.premierleague\.com\/players/' $U_FILE > update_urls.txt
+# update all links found to currect format - into update_urls.txt file
+sed  's/\/players/https:\/\/www\.premierleague\.com\/players/' $'urls.txt' > update_urls.txt
 
-tot=`cat $UP_FILE | wc -l`
-echo "Total Players: $tot" > result.txt
+# initialize the uouput file with total count of players fount - player_results.csv
+tot=`cat $'update_urls.txt' | wc -l`
+echo "Total Players: $tot" > player_results.csv
 
+# search in all players links for midfielder keyword.
 while read line; do
 	wget $line
 	counter=0
@@ -27,9 +27,10 @@ while read line; do
 				(( counter++ ))
  			fi
 		done
-	done <"$OVERVIEW"
+	done <$'overview'
+	# if the keywork found at least one time - save the player info.
 	if [[ $counter -gt 0 ]]; then
-		echo "$line, midfielder, $counter" >> result.txt
+		echo "$line, midfielder, $counter" >> player_results.csv
 	fi
 	rm overview
-done <"$UP_FILE"
+done <$'update_urls.txt'
