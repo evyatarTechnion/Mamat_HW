@@ -1,0 +1,20 @@
+1. There are 20 teams in the Premier League, each team have a squad of about 30 players. 
+We assume that it takes about a minute to look for 'midfielder' keyword in a players web page,
+so the time it takes for only one team is 30 minutes, and 10 hours for all Premier League's teams.
+
+2. We understood that writing a script to serach for patterns in files/web pages can easily decrease the time the task takes,
+and that the result will be more precise.
+This method can be applied in various tasks, such as, search for Errors in log files, search for a circular trip route in a trip web page, etc.
+
+3. We can run the script manually every hour by the command ./scrape_players.sh,
+and we can make it easier.
+One option for running it every hour automatically is to use: 
+
+while true; do
+	...my_script...
+	sleep 3600;
+done
+
+this while loop will run the script every 3600 seconds (1 hour).
+We can overwrite the output files so we dont have problem with palyers that are still exist and already scanned by our code in privious runs.
+Another option is to make uniqe output file for every run, e.g. named it with the time info.
