@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 /* Integer constants */
-enum { MAX_GRADE=100, PASS_GRADE=55, MIN_GRADE=1, CENTUM=100, TEN=10 };
+enum { MAX_GRADE=100, PASS_GRADE=55, MIN_GRADE=1, CENTUM=100, TEN=10 , MAX_CHAR=100};
 
 /**
  * @brief Application's main entry point
@@ -11,16 +11,25 @@ enum { MAX_GRADE=100, PASS_GRADE=55, MIN_GRADE=1, CENTUM=100, TEN=10 };
  * @param argv Pointer to arguments
  * @return Non-zero value in case of an error
  */
+
 int main(int argc, char *argv[]) {
     if (argc < 1) {
         fprintf(stderr, "Error\n");
         return 1;
     }
 
-	/* import files to read/write */
+	/* creating files name */
+	char course_statistics[MAX_CHAR]="./";
+	char grades_file[MAX_CHAR]="./";
+	strcat(course_statistics,argv[1]);
+	strcat(course_statistics,"_stat/course_statistics.txt");
+	strcat(grades_file,argv[1]);
+	strcat(grades_file,"_stat/grades.txt");
+
+	/* import files to read and write */
 	FILE *grades, *stats;
-	grades = fopen("grades.txt", "r");
-	stats = fopen("course_statistics.txt", "w");
+	grades = fopen(grades_file, "r");
+	stats = fopen(course_statistics, "w");
 
 	int count_grades[MAX_GRADE] = {0};
 	int count_students = 0;
@@ -30,7 +39,7 @@ int main(int argc, char *argv[]) {
 
 	/* scan grades and extract data */
 	int cur_grade = 0;
-	while (fscanf(grades, "%d\n", &cur_grade) != EOF) {
+	while (fscanf(grades, "%d", &cur_grade) != EOF) {
 		count_students++;
 		count_grades[cur_grade-1]++;
 		grades_sum += cur_grade;
@@ -70,10 +79,10 @@ int main(int argc, char *argv[]) {
 	cur_grade = MIN_GRADE;
 	for (int i = 0; i < TEN; i++) {
 		for (int j = 0; j < TEN-1; j++) {
-			printf(stats, "%d ",count_grades[cur_grade-1]);
+			fprintf(stats, "%d ",count_grades[cur_grade-1]);
 			cur_grade++;
 		}
-		printf(stats, "%d\n",count_grades[cur_grade-1]);
+		fprintf(stats, "%d\n",count_grades[cur_grade-1]);
 		cur_grade++;
 	}
 
