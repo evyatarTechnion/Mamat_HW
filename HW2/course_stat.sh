@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # check that we got only one argument
-if  ! [[ $# -eq 1 ]] ; then
+if ! [[ $# -eq 1 ]] ; then
 	echo 'Wrong number of arguments' >&2
 	exit 0
 fi
@@ -22,7 +22,7 @@ if ! [[ -e $course_txt ]]; then
 fi
 
 # creating direcory for course statistics
-course_dir=$course'_stat'
+course_dir=$course'_stats'
 
 if [[ -d $course_dir ]]; then
 	rm -rf $course_dir

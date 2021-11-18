@@ -18,18 +18,18 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-	/* creating files name */
-	char course_statistics[MAX_CHAR]="./";
-	char grades_file[MAX_CHAR]="./";
-	strcat(course_statistics,argv[1]);
-	strcat(course_statistics,"_stat/course_statistics.txt");
-	strcat(grades_file,argv[1]);
-	strcat(grades_file,"_stat/grades.txt");
+	/* create files' paths */
+    char grades_path[MAX_CHAR] = "./";
+    strcat(grades_path, argv[1]);
+   	strcat(grades_path, "_stats/grades.txt");
+	char stats_path[MAX_CHAR] = "./";
+	strcat(stats_path, argv[1]);
+	strcat(stats_path, "_stats/course_statistics.txt");
 
 	/* import files to read and write */
 	FILE *grades, *stats;
-	grades = fopen(grades_file, "r");
-	stats = fopen(course_statistics, "w");
+	grades = fopen(grades_path, "r");
+	stats = fopen(stats_path, "w");
 
 	int count_grades[MAX_GRADE] = {0};
 	int count_students = 0;
