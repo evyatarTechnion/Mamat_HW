@@ -61,10 +61,10 @@ int main(int argc, char *argv[]) {
 	/* calculate median grade */
 	int median_position = (count_students+1)/2;
 	int count_low_grade_students = 0;
-	cur_grade = MIN_GRADE;
+	cur_grade = MIN_GRADE - 1;
 	while (count_low_grade_students < median_position) {
-		count_low_grade_students += count_grades[cur_grade-1];
 		cur_grade++;
+		count_low_grade_students += count_grades[cur_grade-1];
 	}
 	int median = cur_grade;
 
