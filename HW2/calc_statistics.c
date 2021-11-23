@@ -3,7 +3,8 @@
 #include <stdlib.h>
 
 /* Integer constants */
-enum { MAX_GRADE=100, PASS_GRADE=55, MIN_GRADE=1, CENTUM=100, TEN=10 , MAX_CHAR=100};
+enum { MAX_GRADE=100, PASS_GRADE=55, MIN_GRADE=1,
+	 CENTUM=100, TEN=10 , MAX_CHAR=100};
 
 /**
  * @brief Application's main entry point
