@@ -3,7 +3,7 @@ CFLAGS= -Wall -g -std=c99
 CCLINK= $(CC)
 OBJS  = file0.o file1.o file2.o file3.o file4.o main.o
 EXEC  = prog.exe
-RM    = prog.exe *.o
+RM    = *.exe *.o
 
 # linking
 $(EXEC): $(OBJS)
