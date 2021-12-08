@@ -356,12 +356,12 @@ int grades_add_grade(struct grades *grades,const char *name,int id,int grade) {
  */
 float grades_calc_avg(struct grades *grades, int id, char **out) {
 	if (!grades) {
-		return ERROR;
+		return AVG_ERROR;
 	}
 
 	//check if student exists in grades list
 	if (is_student_exists(grades, id)) {
-		return ERROR;
+		return AVG_ERROR;
 	}
 	struct student *cur_student;
 	cur_student=student_node(grades->students,id);
