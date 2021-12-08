@@ -13,8 +13,6 @@ struct grades {
 	struct list *students;
 };
 
-/* opaque to the user */
-
 struct student {
 	char *name;
 	int id;
@@ -30,7 +28,7 @@ struct course {
 /* ------------------		functions		------------------ */
 
 /**
- * @brief User function, clones “element” to “output”
+ * @brief clones “element” to “output”
  * @param element the course we want to clone
  * @param output the new clone course
  * @returns 0 on success and 1 otherwise
@@ -47,7 +45,7 @@ int clone_course(void *element, void **output) {
 	dst->grade = src->grade;
 
 	/* copy course's name */
-	dst->name = malloc(sizeof(strlen(src->name)+1));
+	dst->name = (char*)malloc(sizeof(char)*(strlen(src->name)+1));
 	if (!(dst->name)) {
 		free(dst);
 		return ERROR;
@@ -60,7 +58,7 @@ int clone_course(void *element, void **output) {
 
 
 /**
- * @brief User function, destroys “element”
+ * @brief destroys “element”
  * @param element the course we want to destroy
  * @note always succeed
  */
@@ -73,7 +71,7 @@ void destroy_course(void *element) {
 
 
 /**
- * @brief User function, clones “element” to “output”
+ * @brief clones “element” to “output”
  * @param element the student we want to clone
  * @param output the new clone student
  * @returns 0 on success and 1 otherwise
@@ -90,7 +88,7 @@ int clone_student(void *element, void **output) {
 	dst->id = src->id;
 
 	/* copy student's name */
-	dst->name = malloc(sizeof(src->name));
+	dst->name = (char*)malloc(sizeof(char)*(strlen(src->name)+1));
 	if (!(dst->name)) {
 		free(dst);
 		return ERROR;
@@ -100,13 +98,13 @@ int clone_student(void *element, void **output) {
 	/* copy student's course list */
 	element_clone_t course_clone = clone_course;
 	element_destroy_t course_destroy = destroy_course;
-	struct list *courses= list_init(course_clone, course_destroy);
-	if (!courses) {
+	dst->courses = list_init(course_clone, course_destroy);
+	if (!(dst->courses)) {
 		free(dst->name);
 		free(dst);
 		return ERROR;
 	}
-	dst->courses = courses;
+	list_push_back(dst->courses,list_get(list_begin(src->courses)));
 
 	*output = dst;
 	return SUCCESS;
@@ -114,7 +112,7 @@ int clone_student(void *element, void **output) {
 
 
 /**
- * @brief User function, destroys “element”
+ * @brief destroys “element”
  * @param element the student we want to destroy
  * @note always succeed
  */
@@ -149,8 +147,18 @@ struct grades* grades_init() {
 
 
 /**
- * @brief find the cur_student node in grades list
- * @returns A pointer to the student node, NULL is case of an error
+ * @brief Destroys "grades", de-allocate all memory!
+ */
+void grades_destroy(struct grades *grades) {
+
+	list_destroy(grades->students);
+	free(grades);
+}
+
+
+/**
+ * @brief find the cur_student node in grade list
+ * @returns A pointer to the student node, NULL in case of an error
  */
 struct student* student_node(struct list *list, int id) {
 	struct iterator *iterator = list_begin(list);
@@ -166,20 +174,9 @@ struct student* student_node(struct list *list, int id) {
 }
 
 
-
 /**
- * @brief Destroys "grades", de-allocate all memory!
- */
-void grades_destroy(struct grades *grades) {
-
-	list_destroy(grades->students);
-	free(grades);
-}
-
-
-/**
- * @brief checks if this course exists in the courses list"
- * @return 0 on success
+ * @brief checks if this course exists in the course list
+ * @return 0 on success (success = course exists)
  */
 int is_course_exists(struct list *list, const char *name) {
 
@@ -201,8 +198,8 @@ int is_course_exists(struct list *list, const char *name) {
 
 
 /**
- * @brief checks if this student exists in the grades list"
- * @return 0 on success - student exists
+ * @brief checks if this student exists in the grade list
+ * @return 0 on success (success = student exists)
  */
 int is_student_exists(struct grades *grades, int id) {
 
