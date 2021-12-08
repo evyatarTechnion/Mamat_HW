@@ -379,7 +379,7 @@ float grades_calc_avg(struct grades *grades, int id, char **out) {
 
 	//set some variables for avg calculation
 	int num_of_courses = 0;
-	int tot_grades = 0;
+	float tot_grades = 0;
 	float avg = 0;
 
 	//iterating on all cur_student's courses
@@ -387,7 +387,7 @@ float grades_calc_avg(struct grades *grades, int id, char **out) {
 	if (!iterator) {
 		return avg;
 	}
-
+	
 	struct course *cur_course;
 	while (iterator) {
 		cur_course = list_get(iterator);
