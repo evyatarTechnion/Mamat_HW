@@ -183,10 +183,10 @@ int is_course_exists(struct list *list, const char *name) {
 	struct iterator *iterator = list_begin(list);
 	struct course *cur_course;
 	while(iterator) {
+		cur_course=list_get(iterator);
 		if (!cur_course) {
 			return ERROR;
 		}
-		cur_course=list_get(iterator);
 		if(strcmp(cur_course->name, name)==0) {
 			return SUCCESS;
 		}
@@ -322,7 +322,7 @@ int grades_add_grade(struct grades *grades,const char *name,int id,int grade) {
 	new_course->grade=grade;
 
 	//insert course's name
-	new_course->name=(char*)malloc(sizeof(strlen(name)+1));
+	new_course->name=(char*)malloc(sizeof(char)*(strlen(name)+1));
 	if (!(new_course->name)) {
 		free(new_course->name);
 		free(new_course);
