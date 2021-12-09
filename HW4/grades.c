@@ -158,9 +158,11 @@ void grades_destroy(struct grades *grades) {
 
 /**
  * @brief find the cur_student node in grade list
- * @returns A pointer to the student node, NULL in case of an error
+ * @param list pointer to the list structure we want to search
+ * @param id the id of the student we are looking for
+ * @returns A pointer to the student node, NULL if not found
  */
-struct student* student_node(struct list *list, int id) {
+struct student* find_student(struct list *list, int id) {
 	struct iterator *iterator = list_begin(list);
 	struct student *cur_student;
 	while(iterator) {
@@ -168,7 +170,7 @@ struct student* student_node(struct list *list, int id) {
 		if (cur_student->id == id) {
 			return cur_student;
 		}
-		iterator=list_next(iterator);
+		iterator = list_next(iterator);
 	}
 	return NULL;
 }
@@ -176,6 +178,8 @@ struct student* student_node(struct list *list, int id) {
 
 /**
  * @brief checks if this course exists in the course list
+ * @param list pointer to the list structure we want to search
+ * @param name the name of the course we are looking for
  * @return 0 on success (success = course exists)
  */
 int is_course_exists(struct list *list, const char *name) {
@@ -183,40 +187,19 @@ int is_course_exists(struct list *list, const char *name) {
 	struct iterator *iterator = list_begin(list);
 	struct course *cur_course;
 	while(iterator) {
-		cur_course=list_get(iterator);
+		cur_course = list_get(iterator);
 		if (!cur_course) {
 			return ERROR;
 		}
-		if(strcmp(cur_course->name, name)==0) {
-			return SUCCESS;
-		}
-		iterator=list_next(iterator);
-	}
-
-	return ERROR;
-}
-
-
-/**
- * @brief checks if this student exists in the grade list
- * @return 0 on success (success = student exists)
- */
-int is_student_exists(struct grades *grades, int id) {
-
-	struct iterator *iterator = list_begin(grades->students);
-	struct student *cur_student;
-	while(iterator) {
-		cur_student = list_get(iterator);
-		if (!cur_student) {
-			return ERROR;
-		}
-		if (cur_student->id == id) {
+		if(strcmp(cur_course->name, name) == 0) {
 			return SUCCESS;
 		}
 		iterator = list_next(iterator);
 	}
+
 	return ERROR;
 }
+
 
 /**
  * @brief Adds a student with "name" and "id" to "grades"
@@ -231,7 +214,7 @@ int grades_add_student(struct grades *grades, const char *name, int id) {
 	}
 
 	/* check if student already exists */
-	if (!(is_student_exists(grades, id))) {
+	if (find_student(grades->students, id) != NULL) {
 		return ERROR;
 	}
 
@@ -298,12 +281,14 @@ int grades_add_grade(struct grades *grades,const char *name,int id,int grade) {
 		return ERROR;
 	}
 
+	//set cur_student to the node of student with cur id
+	struct student *cur_student;
+	cur_student = find_student(grades->students,id);
+
 	//check if student exists in grades list
-	if (is_student_exists(grades, id)) {
+	if (cur_student == NULL) {
 		return ERROR;
 	}
-	struct student *cur_student;
-	cur_student=student_node(grades->students,id);
 
 	//check if the course already exist in cur_student grades's list
 	if (!(is_course_exists(cur_student->courses,name))) {
@@ -355,16 +340,18 @@ int grades_add_grade(struct grades *grades,const char *name,int id,int grade) {
  * @note On error, sets "out" to NULL.
  */
 float grades_calc_avg(struct grades *grades, int id, char **out) {
+
 	if (!grades) {
 		return AVG_ERROR;
 	}
 
-	//check if student exists in grades list
-	if (is_student_exists(grades, id)) {
+	struct student *cur_student;
+	cur_student = find_student(grades->students,id);
+
+	//check if student exists in the grade list
+	if (cur_student == NULL) {
 		return AVG_ERROR;
 	}
-	struct student *cur_student;
-	cur_student=student_node(grades->students,id);
 	
 	//copy cur_student's name to out
 	char *name = (char*)malloc(sizeof(char)*(strlen(cur_student->name)+1));
@@ -417,19 +404,19 @@ int grades_print_student(struct grades *grades, int id) {
 		return ERROR;
 	}
 
-	//check if student exists
-	if (is_student_exists(grades, id)) {
-		return ERROR;
-	}
-
 	//set cur_student to the node of student with cur id
 	struct student *cur_student;
-	cur_student=student_node(grades->students, id);
+	cur_student = find_student(grades->students, id);
+
+	//check if student exists in the grade list
+	if (cur_student == NULL) {
+		return ERROR;
+	}
 
 	//prints student name and id
 	printf("%s %d:",cur_student->name,id);
 
-	//initialize stract for student's course
+	//initialize struct for student's course
 	struct iterator *iterator=list_begin(cur_student->courses);
 	struct course *cur_course;
 
