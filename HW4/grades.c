@@ -13,13 +13,13 @@ struct grades {
 	struct list *students;
 };
 
-struct student {
+struct Student {
 	char *name;
 	int id;
 	struct list *courses;
 };
 
-struct course {
+struct Course {
 	char *name;
 	int grade;
 };
@@ -35,8 +35,8 @@ struct course {
  */
 int clone_course(void *element, void **output) {
 
-	struct course *src = (struct course*)element;
-	struct course *dst = (struct course*)malloc(sizeof(struct course));
+	struct Course *src = (struct Course*)element;
+	struct Course *dst = (struct Course*)malloc(sizeof(struct Course));
 	if (!dst) {
 		return ERROR;
 	}
@@ -64,7 +64,7 @@ int clone_course(void *element, void **output) {
  */
 void destroy_course(void *element) {
 
-	struct course *course = (struct course*)element;
+	struct Course *course = (struct Course*)element;
 	free(course->name);
 	free(course);
 }
@@ -78,8 +78,8 @@ void destroy_course(void *element) {
  */
 int clone_student(void *element, void **output) {
 
-	struct student *src = (struct student*)element;
-	struct student *dst = (struct student*)malloc(sizeof(struct student));
+	struct Student *src = (struct Student*)element;
+	struct Student *dst = (struct Student*)malloc(sizeof(struct Student));
 	if (!dst) {
 		return ERROR;
 	}
@@ -118,7 +118,7 @@ int clone_student(void *element, void **output) {
  */
 void destroy_student(void *element) {
 
-	struct student *student = (struct student*)element;
+	struct Student *student = (struct Student*)element;
 	list_destroy(student->courses);
 	free(student->name);
 	free(student);
@@ -162,10 +162,10 @@ void grades_destroy(struct grades *grades) {
  * @param id the id of the student we are looking for
  * @returns A pointer to the student node, or NULL if not found
  */
-struct student* find_student(struct list *list, int id) {
+struct Student* find_student(struct list *list, int id) {
 
 	struct iterator *iterator = list_begin(list);
-	struct student *cur_student;
+	struct Student *cur_student;
 	while(iterator) {
 		cur_student = list_get(iterator);
 		if (cur_student->id == id) {
@@ -195,8 +195,8 @@ int grades_add_student(struct grades *grades, const char *name, int id) {
 	}
 
 	/* create student node */
-	struct student *new_student;
-	new_student = (struct student*)malloc(sizeof(struct student));
+	struct Student *new_student;
+	new_student = (struct Student*)malloc(sizeof(struct Student));
 	if (!new_student) {
 		free(new_student);
 		return ERROR;
@@ -248,7 +248,7 @@ int grades_add_student(struct grades *grades, const char *name, int id) {
 int is_course_exists(struct list *list, const char *name) {
 
 	struct iterator *iterator = list_begin(list);
-	struct course *cur_course;
+	struct Course *cur_course;
 	while(iterator) {
 		cur_course = list_get(iterator);
 		if(strcmp(cur_course->name, name) == 0) {
@@ -282,7 +282,7 @@ int grades_add_grade(struct grades *grades,
 	}
 
 	/* set cur_student to the node of student with cur id */
-	struct student *cur_student;
+	struct Student *cur_student;
 	cur_student = find_student(grades->students,id);
 
 	/* check if student exists in grades list */
@@ -296,8 +296,8 @@ int grades_add_grade(struct grades *grades,
 	}
 
 	/* creating new node for cur_student's course */
-	struct course *new_course;
-	new_course=(struct course*)malloc(sizeof(struct course));
+	struct Course *new_course;
+	new_course=(struct Course*)malloc(sizeof(struct Course));
 	if (!new_course) {
 		free(new_course);
 		return ERROR;
@@ -345,7 +345,7 @@ float grades_calc_avg(struct grades *grades, int id, char **out) {
 		return AVG_ERROR;
 	}
 
-	struct student *cur_student;
+	struct Student *cur_student;
 	cur_student = find_student(grades->students,id);
 
 	/* check if student exists in the grade list */
@@ -375,7 +375,7 @@ float grades_calc_avg(struct grades *grades, int id, char **out) {
 		return avg;
 	}
 	
-	struct course *cur_course;
+	struct Course *cur_course;
 	while (iterator) {
 		cur_course = list_get(iterator);
 		tot_grades+=(cur_course->grade);
@@ -405,7 +405,7 @@ int grades_print_student(struct grades *grades, int id) {
 	}
 
 	/* set cur_student to the node of student with cur id */
-	struct student *cur_student;
+	struct Student *cur_student;
 	cur_student = find_student(grades->students, id);
 
 	/* check if student exists in the grade list */
@@ -418,7 +418,7 @@ int grades_print_student(struct grades *grades, int id) {
 
 	/* initialize struct for student's course */
 	struct iterator *iterator=list_begin(cur_student->courses);
-	struct course *cur_course;
+	struct Course *cur_course;
 
 	/* prints all student's courses name and grades */
 	while(iterator) {
@@ -451,7 +451,7 @@ int grades_print_all(struct grades *grades) {
 		return ERROR;
 	}
 
-	struct student *cur_student;
+	struct Student *cur_student;
 	struct iterator *iterator = list_begin(grades->students);
 	while(iterator) {
 		cur_student = list_get(iterator);
