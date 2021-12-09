@@ -198,7 +198,6 @@ int grades_add_student(struct grades *grades, const char *name, int id) {
 	struct Student *new_student;
 	new_student = (struct Student*)malloc(sizeof(struct Student));
 	if (!new_student) {
-		free(new_student);
 		return ERROR;
 	}
 
@@ -299,7 +298,6 @@ int grades_add_grade(struct grades *grades,
 	struct Course *new_course;
 	new_course=(struct Course*)malloc(sizeof(struct Course));
 	if (!new_course) {
-		free(new_course);
 		return ERROR;
 	}
 
@@ -309,7 +307,6 @@ int grades_add_grade(struct grades *grades,
 	/* insert course's name */
 	new_course->name=(char*)malloc(sizeof(char)*(strlen(name)+1));
 	if (!(new_course->name)) {
-		free(new_course->name);
 		free(new_course);
 		return ERROR;
 	}
@@ -359,7 +356,6 @@ float grades_calc_avg(struct grades *grades, int id, char **out) {
 	/* copy cur_student's name to out */
 	char *name = (char*)malloc(sizeof(char)*(strlen(cur_student->name)+1));
 	if (!name) {
-		free(name);
 		return AVG_ERROR;
 	}
 
