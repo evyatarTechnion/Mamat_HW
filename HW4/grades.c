@@ -341,6 +341,9 @@ int grades_add_grade(struct grades *grades,
  */
 float grades_calc_avg(struct grades *grades, int id, char **out) {
 
+	/* sets default in case of an error */
+	*out = NULL;
+
 	if (!grades) {
 		return AVG_ERROR;
 	}
@@ -356,12 +359,11 @@ float grades_calc_avg(struct grades *grades, int id, char **out) {
 	/* copy cur_student's name to out */
 	char *name = (char*)malloc(sizeof(char)*(strlen(cur_student->name)+1));
 	if (!name) {
-		out=NULL;
 		free(name);
 		return AVG_ERROR;
 	}
 
-	strcpy(name , cur_student->name);
+	strcpy(name, cur_student->name);
 	*out=name;
 
 	/* set some variables for avg calculation */
