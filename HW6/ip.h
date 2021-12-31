@@ -1,16 +1,25 @@
-#ifndef PORT_H
-#define PORT_H
+#ifndef IP_H
+#define IP_H
 
 #include "string.h"
 #include "field.h"
 
-enum { BOUNDS=2 };
 
-
-class Port: public Field {
+class IP : public Field {
 
 private:
-	int range[BOUNDS];
+	int low_feasible_ip;
+	int high_feasible_ip;
+	int mask;
+	int given_ip;
+
+	/**
+	 * @brief convers a String typed which containes the ip in its compact form
+	 * @param ip_to_unite this is the variable which is to be converted
+	 * @return int which is the converted form of the ip.
+	 */
+	int united_ip(String ip_to_unite) const;
+	// an explanation is the cpp file
 
 public:
 
@@ -18,7 +27,7 @@ public:
 	 * @brief constructor with argument
 	 * @param pattern
 	 */
-	Port(String pattern);
+	IP(String pattern);
 
 	/**
 	 * @brief sets the range of values this port can get
@@ -34,6 +43,5 @@ public:
 	 */
 	bool match_value(String val) const;
 };
-
 
 #endif

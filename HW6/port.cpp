@@ -2,12 +2,19 @@
 
 #define DASH "-"
 
+
 /**
 * @brief constructor with argument
 * @param pattern defines if the port is dst or src
 */
 Port::Port(String pattern): Field(pattern) {}
 
+
+/**
+ * @brief sets the range of values this port can get
+ * @param val: String with range of values
+ * @return true if val is valid, false else
+ */
 bool Port::set_value(String val) {
 
 	String *substrings;
@@ -37,6 +44,11 @@ bool Port::set_value(String val) {
 }
 
 
+/**
+ * @brief checks if val matches the range
+ * @param val: String with a port number
+ * @return true if matches, false else
+ */
 bool Port::match_value(String val) const {
 	int port_num = val.trim().to_integer();
 	return ( (range[0] <= port_num) && (port_num <= range[1]) );
