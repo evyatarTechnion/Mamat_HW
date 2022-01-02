@@ -1,4 +1,5 @@
 #include "ip.h"
+#include "string.h"
 
 enum { MASK_SUBS=2, MAX_MASK=32, MIN_MASK=0, IP_BYTES=4, BYTE=8, ERROR=-1 };
 #define SLASH "/"
@@ -78,7 +79,7 @@ bool IP::match_value(String val) const {
  * @param divided_ip the ip we want to combine
  * @return the integer ip
  */
-int IP::combine_ip(String divided_ip) {
+int IP::combine_ip(String divided_ip) const {
 	String *substrings;
 	size_t size = 0;
 

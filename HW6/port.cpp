@@ -1,4 +1,5 @@
 #include "port.h"
+#include "string.h"
 
 #define DASH "-"
 
@@ -23,7 +24,7 @@ bool Port::set_value(String val) {
 	val.split(DASH, &substrings, &size);
 
 	/* if there is more/less than two substrings - delete them */
-	if (size != BOUNDS) {
+	if (size != BOUND) {
 		if (size != 0) {
 			delete[] substrings;
 		}

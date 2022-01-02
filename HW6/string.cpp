@@ -1,8 +1,13 @@
 #include "string.h"
 #include <cstring>
+#include "ip.h"
 
 #define END_STRING '\0'
 #define SPACE ' '
+
+
+// function decleration
+char* allocate_and_copy(const char* str,int size);
 
 
 /**
@@ -108,7 +113,7 @@ bool String::equals(const char *rhs) const{
  * compute "size".
  */
 void String::split(const char *delimiters,String **output,size_t *size) const {
-	if(delimiters == NULL || data == NULL){
+	if(delimiters == NULL || data == NULL) {
 		return;
 	}
 
@@ -138,7 +143,7 @@ void String::split(const char *delimiters,String **output,size_t *size) const {
 	*output = new String[substrings_num];
 	int start = 0;
 	int i_substring = 0;
-	for (i = 1; i < len+1; i++) {
+	for (int i = 1; i < len+1; i++) {
 		if (cloned_data[i] == END_STRING && cloned_data[i-1] != END_STRING) {
 			(*output)[i_substring] = String(&cloned_data[start]);
 			i_substring++;
@@ -179,11 +184,9 @@ String String::trim() const{
 	
 	char trim_string[end-start+1];
 	strncpy(trim_string,&data[start],end-start);
-	trim_string[end-start]=END;
+	trim_string[end-start]=END_STRING;
 	//trim_string = allocate_and_copy(&data[start],end-start);
 	String new_trim_string = String(trim_string);
-
-
 	return new_trim_string;
 	
 }

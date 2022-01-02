@@ -16,7 +16,7 @@ private:
 	 * @param divided_ip the ip we want to combine
 	 * @return the integer ip
 	 */
-	int combine_ip(String divided_ip);
+	int combine_ip(String divided_ip) const;
 
 public:
 

@@ -4,13 +4,13 @@
 #include "string.h"
 #include "field.h"
 
-enum { BOUNDS=2 };
+enum { BOUND=2 };
 
 
 class Port: public Field {
 
 private:
-	int range[BOUNDS];
+	int range[BOUND];
 
 public:
 
