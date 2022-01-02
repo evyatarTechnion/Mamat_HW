@@ -1,43 +1,11 @@
 #include "ip.h"
 
-enum { NUM_OF_SUBS=2, MAX_MASK=32, MIN_MASK=0 };
-#define IP_SEGMENTS 4
+enum { MASK_SUBS=2, MAX_MASK=32, MIN_MASK=0, IP_BYTES=4, BYTE=8, ERROR=-1 };
 #define SLASH "/"
-#define IP_ERROR (-1)
-#define DOT_SIGN "."
-#define IP_SEG_SIZE 8
-#define FULL_MASK 0xFFFFFFFF
+#define DOT "."
 
 
 IP::IP(String pattern): Field(pattern) {}
-
-
-/**
- * @brief concatenates and shifts a string into an integer
- * @param ip_to_unite a String which is being assessed into an integer
- * @return ERROR is all cases of an error, else the assessted
- * @note a method which has not been introducted in the questionnaire
- */
-int IP::united_ip(String ip_to_unite)const{
-	String *substrings;
-	size_t size=0;
-
-	ip_to_unite.split(DOT_SIGN,&substrings,&size);
-
-	if (size != IP_SEGMENTS){
-		delete[] substrings;
-		return IP_ERROR;
-	}
-
-	int ip_to_return=0;
-	int i;
-
-	for(i=0; i<IP_SEGMENTS;i++){
-		ip_to_return+=(substrings[i].trim().to_integer())<<(IP_SEG_SIZE*(i));
-	}
-	delete[] substrings;
-	return ip_to_return;
-}
 
 
 /**
@@ -52,32 +20,32 @@ bool IP::set_value(String val) {
 
 	val.split(SLASH, &substrings, &size);
 
-	/* if there is more/less than two substrings - delete them */
-	if(size != NUM_OF_SUBS) {
+	/* check if there are more/less than two substrings */
+	if(size != MASK_SUBS) {
 		delete[] substrings;
 		return false;
 	}
 
-	mask = substrings[1].trim().to_integer();
+	int mask = substrings[1].trim().to_integer();
 
 	/* check if the mask is out of size range */
-	if (mask > MAX_MASK || mask < MIN_MASK){
+	if (mask > MAX_MASK || mask < MIN_MASK) {
 		delete[] substrings;
 		return false;
 	}
 
-	int bitmask = (1 << ((IP_SEG_SIZE*IP_SEGMENTS)-mask)) -1;
+	int bin_mask = (1 << ((IP_BYTES*BYTE) - mask)) -1;
 
-	given_ip = united_ip(substrings[0].trim());
-	// we'll have to define return error value for latter function, currently 0
-	// disputed
-	if (given_ip == IP_ERROR){
+	int unmasked_ip = combine_ip(substrings[0].trim());
+
+	/* check if the unmasked ip is valid */
+	if (unmasked_ip == ERROR) {
 		delete[] substrings;
 		return false;
 	}
 
-	low_feasible_ip= given_ip & (~bitmask);
-	high_feasible_ip= given_ip | bitmask;
+	range[0] = unmasked_ip & (~bin_mask);
+	range[1] = unmasked_ip | bin_mask;
 	delete[] substrings;
 	return true;
 
@@ -89,14 +57,44 @@ bool IP::set_value(String val) {
  * @param val: String with a port number
  * @return true if matches, false else
  */
-bool IP::match_value(String val) const{
+bool IP::match_value(String val) const {
 
-	int ip_to_check = united_ip(val.trim());
-	if(ip_to_check == IP_ERROR){
+	int ip_num = combine_ip(val.trim());
+
+	/* check if the ip is valid */
+	if(ip_num == ERROR) {
 		return false;
 	}
-	if (low_feasible_ip <= ip_to_check && ip_to_check <= high_feasible_ip){
+
+	if (range[0] <= ip_num && ip_num <= range[0]) {
 		return true;
 	}
 	return false;
+}
+
+
+/**
+ * @brief combine string-form ip into an integer for internal use
+ * @param divided_ip the ip we want to combine
+ * @return the integer ip
+ */
+int IP::combine_ip(String divided_ip) {
+	String *substrings;
+	size_t size = 0;
+
+	divided_ip.split(DOT, &substrings, &size);
+
+	/* check if there are more/less than four substrings */
+	if (size != IP_BYTES){
+		delete[] substrings;
+		return ERROR;
+	}
+
+	int combined_ip = 0;
+	for(int i = 0; i < IP_BYTES; i++) {
+		combined_ip += ((substrings[i].trim().to_integer()) << (BYTE * i));
+	}
+
+	delete[] substrings;
+	return combined_ip;
 }

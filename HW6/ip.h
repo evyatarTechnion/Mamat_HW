@@ -4,22 +4,19 @@
 #include "string.h"
 #include "field.h"
 
+enum { BOUNDS=2 };
 
 class IP : public Field {
 
 private:
-	int low_feasible_ip;
-	int high_feasible_ip;
-	int mask;
-	int given_ip;
+	int range[BOUNDS];
 
 	/**
-	 * @brief convers a String typed which containes the ip in its compact form
-	 * @param ip_to_unite this is the variable which is to be converted
-	 * @return int which is the converted form of the ip.
+	 * @brief combine string-form ip into an integer for internal use
+	 * @param divided_ip the ip we want to combine
+	 * @return the integer ip
 	 */
-	int united_ip(String ip_to_unite) const;
-	// an explanation is the cpp file
+	int combine_ip(String divided_ip);
 
 public:
 
