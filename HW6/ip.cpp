@@ -6,6 +6,11 @@ enum { MASK_SUBS=2, MAX_MASK=32, MIN_MASK=0, IP_BYTES=4, BYTE=8, ERROR=-1 };
 #define DOT "."
 
 
+/* ip_string --> ip_integer. declaration only.
+ * implementation in the end of this file */
+int combine_ip(String divided_ip) const;
+
+
 IP::IP(String pattern): Field(pattern) {}
 
 
@@ -20,25 +25,21 @@ bool IP::set_value(String val) {
 	size_t size = 0;
 
 	val.split(SLASH, &substrings, &size);
-
 	/* check if there are more/less than two substrings */
 	if(size != MASK_SUBS) {
 		delete[] substrings;
 		return false;
 	}
-
 	int mask = substrings[1].trim().to_integer();
-
 	/* check if the mask is out of size range */
 	if (mask > MAX_MASK || mask < MIN_MASK) {
 		delete[] substrings;
 		return false;
 	}
 
-	int bin_mask = (1 << ((IP_BYTES*BYTE) - mask)) -1;
+	int bin_mask = (1 << (MAX_MASK - mask)) - 1;
 
 	int unmasked_ip = combine_ip(substrings[0].trim());
-
 	/* check if the unmasked ip is valid */
 	if (unmasked_ip == ERROR) {
 		delete[] substrings;
@@ -49,7 +50,6 @@ bool IP::set_value(String val) {
 	range[1] = unmasked_ip | bin_mask;
 	delete[] substrings;
 	return true;
-
 }
 
 
@@ -61,13 +61,12 @@ bool IP::set_value(String val) {
 bool IP::match_value(String val) const {
 
 	int ip_num = combine_ip(val.trim());
-
 	/* check if the ip is valid */
 	if(ip_num == ERROR) {
 		return false;
 	}
 
-	if (range[0] <= ip_num && ip_num <= range[0]) {
+	if (range[0] <= ip_num && ip_num <= range[1]) {
 		return true;
 	}
 	return false;
@@ -79,12 +78,11 @@ bool IP::match_value(String val) const {
  * @param divided_ip the ip we want to combine
  * @return the integer ip
  */
-int IP::combine_ip(String divided_ip) const {
+int combine_ip(String divided_ip) const {
 	String *substrings;
 	size_t size = 0;
 
 	divided_ip.split(DOT, &substrings, &size);
-
 	/* check if there are more/less than four substrings */
 	if (size != IP_BYTES){
 		delete[] substrings;
