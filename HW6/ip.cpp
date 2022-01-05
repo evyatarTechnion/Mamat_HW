@@ -8,7 +8,7 @@ enum { MASK_SUBS=2, MAX_MASK=32, MIN_MASK=0, IP_BYTES=4, BYTE=8, ERROR=-1 };
 
 /* ip_string --> ip_integer. declaration only.
  * implementation in the end of this file */
-int combine_ip(String divided_ip) const;
+int combine_ip(String divided_ip);
 
 
 IP::IP(String pattern): Field(pattern) {}
@@ -78,7 +78,7 @@ bool IP::match_value(String val) const {
  * @param divided_ip the ip we want to combine
  * @return the integer ip
  */
-int combine_ip(String divided_ip) const {
+int combine_ip(String divided_ip) {
 	String *substrings;
 	size_t size = 0;
 
