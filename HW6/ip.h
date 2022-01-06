@@ -1,6 +1,7 @@
 #ifndef IP_H
 #define IP_H
 
+#include "string.h"
 #include "field.h"
 
 enum { BOUNDS=2 };
@@ -8,7 +9,7 @@ enum { BOUNDS=2 };
 class IP : public Field {
 
 private:
-	int range[BOUNDS];
+	unsigned int range[BOUNDS];
 
 public:
 

@@ -1,13 +1,11 @@
 #include "ip.h"
+#include "string.h"
 
-enum { MASK_SUBS=2, MAX_MASK=32, MIN_MASK=0, IP_BYTES=4, BYTE=8, ERROR=-1 };
+enum { MAX_MASK=32, MAX_RANGE=255, LST_BYTE=24};
 #define SLASH "/"
 #define DOT "."
-
-
-/* ip_string --> ip_integer. declaration only.
- * implementation in the end of this file */
-int combine_ip(String divided_ip);
+#define END "\0"
+#define FULL_NUM 0xFFFFFFFF
 
 
 IP::IP(String pattern): Field(pattern) {}
@@ -20,35 +18,66 @@ IP::IP(String pattern): Field(pattern) {}
  */
 bool IP::set_value(String val) {
 
-	String *substrings;
-	size_t size = 0;
-
-	val.split(SLASH, &substrings, &size);
-	/* check if there are more/less than two substrings */
-	if(size != MASK_SUBS) {
-		delete[] substrings;
+	if(val.equals(END)){ //If Empty String.
 		return false;
 	}
-	int mask = substrings[1].trim().to_integer();
-	/* check if the mask is out of size range */
-	if (mask > MAX_MASK || mask < MIN_MASK) {
-		delete[] substrings;
-		return false;
+	String *slash_split;
+	String *dot_split;
+	size_t num_after_slash;//Number of strings after splitting by '\'
+	size_t num_after_dot;//Number of strings after splitting by '.'
+	unsigned int mask_num = 0;
+	unsigned int mask = 0;
+	unsigned int ip_hex = 0;	//We will turn IP address to hexa.
+	unsigned int segment = 0;  //We will use it to create IP num
+	val.split(SLASH, &slash_split, &num_after_slash);
+	if(sizeof(short) != num_after_slash){
+		//If number of '/' was differen than 1
+		delete[] slash_split;
+		return false;	//(Invalid)
+	}
+	/*Get mask number*/
+	mask_num = slash_split[1].trim().to_integer();
+	if(mask_num > MAX_MASK){
+		delete[] slash_split;
+		return false;	//(Invalid)
 	}
 
-	unsigned int bin_mask = (1L << (MAX_MASK - mask)) - 1;
-
-	int unmasked_ip = combine_ip(substrings[0].trim());
-	/* check if the unmasked ip is valid */
-	if (unmasked_ip == ERROR) {
-		delete[] substrings;
-		return false;
+	/*Split IP according to '.' sign without mask*/
+	slash_split[0].split(DOT, &dot_split, &num_after_dot);
+	if(sizeof(int) != num_after_dot){
+		//If number of '.' was differen than 3
+		delete[] slash_split;
+		delete[] dot_split;
+		return false;	//(Invalid)
 	}
 
-	range[0] = unmasked_ip & (~bin_mask);
-	range[1] = unmasked_ip | bin_mask;
-	delete[] substrings;
+	for(size_t i=0; i < sizeof(int); i++){
+		segment = dot_split[i].trim().to_integer();
+		if (segment > MAX_RANGE){
+			delete[] slash_split;
+			delete[] dot_split;
+			return false;	//(Invalid)
+		}
+		ip_hex |= (segment << (LST_BYTE - (sizeof(double) * i)));
+	}
+
+	mask = FULL_NUM >> (mask_num);
+
+	if(MAX_MASK == mask_num){
+		mask = 0;
+	}
+	//Mask num can not be zero and 32 at the same time
+	if(0 == mask_num){
+		mask = FULL_NUM;
+	}
+
+	this->range[1] = ip_hex | mask;
+	this->range[0] = ip_hex & (~mask);
+
+	delete[] dot_split;
+	delete[] slash_split;
 	return true;
+
 }
 
 
@@ -57,42 +86,35 @@ bool IP::set_value(String val) {
  * @param val: String with a port number
  * @return true if matches, false else
  */
-bool IP::match_value(String val) const {
-
-	int ip_num = combine_ip(val.trim());
-	/* check if the ip is valid */
-	if(ip_num == ERROR) {
+bool IP::match_value(String val) const{
+	if(val.equals(END)){ //If Empty String.
 		return false;
 	}
+	String *dot_split;
+	size_t num_after_dot;//Number of strings after splitting by '.'
+	unsigned int ip_hex = 0;	//We will turn IP address to hexa.
+	unsigned int segment = 0;  //We will use it to create IP num
 
-	if (range[0] <= ip_num && ip_num <= range[1]) {
+	/*Split IP according to '.' sign without mask*/
+	val.split(DOT, &dot_split, &num_after_dot);
+	if(sizeof(int) != num_after_dot){
+		//If number of '.' was differen than 3
+		delete[] dot_split;
+		return false;	//(Invalid)
+	}
+
+	for(size_t i=0; i < sizeof(int); i++){
+		segment = dot_split[i].trim().to_integer();
+		if (segment > MAX_RANGE){
+			delete[] dot_split;
+			return false;	//(Invalid)
+		}
+		ip_hex |= (segment << (LST_BYTE - (sizeof(double) * i)));
+	}
+
+	delete[] dot_split;
+	if(range[0] <= ip_hex && ip_hex<= range[1]){
 		return true;
 	}
 	return false;
-}
-
-
-/**
- * @brief combine string-form ip into an integer for internal use
- * @param divided_ip the ip we want to combine
- * @return the integer ip
- */
-int combine_ip(String divided_ip) {
-	String *substrings;
-	size_t size = 0;
-
-	divided_ip.split(DOT, &substrings, &size);
-	/* check if there are more/less than four substrings */
-	if (size != IP_BYTES){
-		delete[] substrings;
-		return ERROR;
-	}
-
-	int combined_ip = 0;
-	for(int i = 0; i < IP_BYTES; i++) {
-		combined_ip += ((substrings[i].trim().to_integer()) << (BYTE * i));
-	}
-
-	delete[] substrings;
-	return combined_ip;
 }
