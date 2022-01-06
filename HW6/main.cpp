@@ -1,9 +1,6 @@
-#include <iostream>
-#include <cstring>
 #include "port.h"
-#include "string.h"
-#include "field.h"
 #include "ip.h"
+#include "input.h"
 
 enum { ERROR=-1, RULE_SUBS=2 };
 
@@ -12,10 +9,6 @@ enum { ERROR=-1, RULE_SUBS=2 };
 #define SOURCE_PORT "src-port"
 #define DEST_IP "dst-ip"
 #define DEST_PORT "dst-port"
-
-
-extern int check_args(int, char**);
-extern void parse_input(Field&);
 
 
 /**
@@ -35,7 +28,6 @@ int main(int argc, char **argv) {
 	size_t size = 0;
 
 	argument.split(DELIM, &substrings, &size);
-
 	/* check if there are more/less than two substrings */
 	if ((int)size != RULE_SUBS) {
 		delete[] substrings;
