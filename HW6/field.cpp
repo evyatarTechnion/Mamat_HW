@@ -34,21 +34,21 @@ Field::~Field() {
  */
 bool Field::match(String packet){
 
-	String *substr;
+	String *s_str;
 	size_t size = 0;
-	packet.split(DELIMETERS,&substr,&size);
+	packet.split(DELIMETERS,&s_str,&size);
 
 	if (size == 0) { //empty packet
 		return false;
 	}
 
 	for (int i=0; i<(int)size; i+=TWO){
-        if(pattern.equals(substr[i].trim()) && match_value(substr[i+1].trim())){
-			delete[] substr;
+        if(pattern.equals(s_str[i].trim()) && match_value(s_str[i+1].trim())) {
+			delete[] s_str;
 			return true;
 
 		}
 	}
-	delete[] substr;
+	delete[] s_str;
 	return false;
 }

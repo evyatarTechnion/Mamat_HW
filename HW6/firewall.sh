@@ -4,8 +4,10 @@ output=""
 
 while read rule
 do
-	#delete spaces,empty lines and comments
-	rule=`echo "$rule" |sed 's/ //g' | sed '/^$/d' | grep -o '^[^#]*'`
+	# delete spaces,empty lines ,comments and unnecessary commas.
+	rule=`echo "$rule" | sed 's/ //g' | sed '/^$/d' | grep -o '^[^#]*' \
+	    | sed 's/^[,]\+//g' | sed 's/[,]\+$//g' | sed  's/[,]\+/,/g'`
+
 	if [[ -n $rule ]]; then
 		#turn the rule into filters
 		readarray -d , -t check <<< "$rule"
