@@ -1,7 +1,6 @@
 #ifndef IP_H
 #define IP_H
 
-#include "string.h"
 #include "field.h"
 
 enum { BOUNDS=2 };
@@ -10,13 +9,6 @@ class IP : public Field {
 
 private:
 	int range[BOUNDS];
-
-	/**
-	 * @brief combine string-form ip into an integer for internal use
-	 * @param divided_ip the ip we want to combine
-	 * @return the integer ip
-	 */
-	//int combine_ip(String divided_ip) const;
 
 public:
 

@@ -1,5 +1,4 @@
 #include "ip.h"
-#include "string.h"
 
 enum { MASK_SUBS=2, MAX_MASK=32, MIN_MASK=0, IP_BYTES=4, BYTE=8, ERROR=-1 };
 #define SLASH "/"
@@ -37,7 +36,7 @@ bool IP::set_value(String val) {
 		return false;
 	}
 
-	int bin_mask = (1 << (MAX_MASK - mask)) - 1;
+	unsigned int bin_mask = (1L << (MAX_MASK - mask)) - 1;
 
 	int unmasked_ip = combine_ip(substrings[0].trim());
 	/* check if the unmasked ip is valid */
